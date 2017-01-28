@@ -48,7 +48,9 @@ function show(data) {
 	$('#b_hakkou').tume(
 		d.Hakkou+" "+
 		(d.HatubaiDate?df(d.HatubaiDate):(h.dateshuppan?h.dateshuppan:""))+" "+
-		(d.Kakaku?"¥"+d.Kakaku:"") +"<br/>") ;
+		(d.Hankei?" "+oBD.hankeiText(d.Hankei):"") +
+		(d.Kakaku?" ¥"+d.Kakaku:"") +
+		"<br/>") ;
 	$('#b_isbn').tume(
 		"ISBN:"+d.ISBN+" "+
 		(d.Ccode?"C"+d.Ccode:"")+" "+
