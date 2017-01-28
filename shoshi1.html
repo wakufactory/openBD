@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,user-scalable=yes" />
+<title>書誌カード powered by openbd.jp</title>
+<script src="/js/jquery.js"></script>
+<script src="tume.js"></script>
+<script src="obd.js"></script>
+<script>
+$(function(){
+	var isbn = location.search.substr(1) ;
+
+	oBD.search(isbn,show) ;
+})
+function show(data) {
+	console.log(data) ;
+	var d = data.onix ;
+	var h = data.hanmoto ;
+	function an(s) {
+		return s.replace("　"," ") ;
+	}
+	function df(d) {
+		return d.substr(0,4)+"-"+d.substr(4,2)+"-"+d.substr(6,2) ;
+	}
+	function opt(d) {
+		return (d && d!="")?d:"" ;
+	}
+	if(d==null) {
+		$('#b_title').html("no data") ;
+		return ;
+	}
+	$('#b_sh').attr('src',d.Cover) ;
+	$('#b_title').tume( d.Title,false) ;
+	if(d.SubTitle) $('#b_subtitle').tume("&nbsp;&nbsp;"+d.SubTitle) ;
+	if(d.Label) $('#b_label').tume("&lt;"+ d.Label+"&gt;") ;
+	if(d.Series) {
+		$('#b_series').tume(d.Series+(d.SeriesKanji?d.SeriesKanji:"")) ;
+	}					
+	if(d.Description) $('#b_shoukai').html(d.Description);
+	var a =[] ;
+	$(d.Authors).each(function(){
+		var r = [] ;
+		for(i in this.Role) r.push(oBD.author_roleText(this.Role[i]))
+		a.push(an(this.Name+"/"+r.join("・"))) ;
+	})
+	$('#b_author').tume(a.join(", ")+"<br/>").attr('title',a.join(",")) ;
+	$('#b_hakkou').tume(
+		d.Hakkou+" "+
+		(d.HatubaiDate?df(d.HatubaiDate):(h.dateshuppan?h.dateshuppan:""))+" "+
+		(d.Kakaku?"¥"+d.Kakaku:"") +"<br/>") ;
+	$('#b_isbn').tume(
+		"ISBN:"+d.ISBN+" "+
+		(d.Ccode?"C"+d.Ccode:"")+" "+
+		(d.GenreCode?"["+oBD.genreText(d.GenreCode)+"]":"")) ;
+	$('#han').attr('href',"http://www.hanmoto.com/bd/isbn/"+d.ISBN) ;
+}
+</script>
+<style>
+#base {
+	box-sizing: border-box ;
+	display: flex ;
+	width:500px ;
+	height:300px ;
+	font-size:16px ;
+	overflow:hidden ;
+	background-color:#f0f0f0;
+}
+#info{
+	width:290px ;
+	margin:4px ;
+}
+#syoei {
+	width:200px ;
+	text-align: center; 
+}
+#b_sh {
+	max-width:200px ;
+}
+#info div {
+	width:100% ;
+}
+#b_title {
+	font-size:1.2em ;
+	font-family:sans-serif;
+	font-weight:bold ;
+}
+#b_subtitle,#b_series,#b_label,#b_isbn {
+	font-size:0.9em ;
+}
+#b_author {
+	font-weight:bold ;
+}
+#b_hakkou,#b_isbn{
+	font-family:sans-serif ;
+}
+#b_shoukai {
+	height:120px ;
+	overflow-y:scroll ;
+	border-top:1px solid black ;
+	border:1px dotted #888 ;
+}
+@media (max-width:500px) {
+body {
+	margin:0 ;
+}
+#base {
+	width:300px ;
+	height:auto ;
+	flex-direction: column ;
+}
+#syoei {
+	width:300px ;
+	height:200px ;
+}
+#b_sh {
+	max-height:200px ;
+}
+#b_shoukai {
+	height:auto ;
+}
+}
+button {
+	font-size:1.2em ;
+	margin:5px ;
+	background-color: #fff ;
+	color:#888 ;
+	border-radius: 5px ;
+}
+.foot {
+	font-size:0.5em ;
+}
+</style>
+</head>
+<body>
+<div id=base>
+<div id=syoei>
+<img src="" id=b_sh />
+</div>
+<div id=info>
+<div id=b_series></div>
+<div id=b_title></div>
+<div id=b_subtitle></div>
+<div id=b_author></div>
+<div id=b_label></div>
+<div id=b_hakkou></div>
+<div id=b_isbn></div>
+<div id=b_shoukai></div>
+</div>
+</div>
+<a id=han href="" target="_blank">版元ドットコムで詳細を見る</a>
+
+<br/><br/>
+<div class=foot>powered by <a href="openbd.jp">openBD</a></div>
+</body>
+</html>
